@@ -49,10 +49,20 @@ async def hello(ctx):
     await ctx.send(f"hello {ctx.author.mention}")#says hello back to the user when propted
 
 @bot.command()
-async def reminder(ctx, *arg):
-    arguments = ', '.join(arg)
-    await ctx.send(f'{len(arg)} arguments: {arguments}')
-
+async def reminder(ctx, when: str = None, *,message: str = None): #when takes the first word after the reminder command, = None makes both optional
+    if when is None or message is None:
+        await ctx.send("How to: '!reminder 30m start study session'")#if reminder command is empty, it sends a message describing how to use it
+        return
+    seconds = parse_duration(when)
+    if seconds is None or seconds > MAX_SECONDS:
+        await ctx.send("I couldn't read that time. Try something like '10m', '1h' or '1h30m' (NO LONGER THAN A YEAR!!)")#if seconds longer than a year or is none throw an error to the user and guide them
+        return
+    if len(message) > MAX_MESSAGE_LENGTH:
+        await ctx.send("Message was longer than 200 characters, im sorry but i couldn't read it")#if message over max length constant variable then let the user know
+        return
+    await ctx.send(f"Okay{ctx.author.mention},Lets start the study session - {when}: {message}")#confirms the study session
+    await asyncio.sleep(seconds)#waits for the reminder time, await lets the bot keep handling other messages in the meantime
+    await  ctx.send(f"{ctx.author.mention} Study session complete")#alerts the user when time is up
 
 
 bot.run(token, log_handler=handler, log_level=logging.INFO) #runs bot
