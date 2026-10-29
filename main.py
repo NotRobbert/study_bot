@@ -3,6 +3,7 @@ import discord
 import logging
 import os
 import asyncio
+import studydb
 
 from dotenv import load_dotenv
 from discord.ext import commands, tasks
